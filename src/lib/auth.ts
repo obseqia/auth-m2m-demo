@@ -52,6 +52,9 @@ async function fetchNewM2MToken(): Promise<CachedToken | null> {
   const { token, expiration } = await client.m2m.createToken({
     secondsUntilExpiration: 10,
     tokenFormat: "jwt",
+    claims: {
+      permissions: ["read:users", "read:orders"],
+    }
   });
   console.debug("Generated Clerk new M2M token:", { token, expiration });
 
