@@ -20,12 +20,14 @@ export async function getRestaurantCheckoutClover(id: string) {
   const backendEndpoint = getBackendEndpoint();
   const url = `${backendEndpoint}/restaurant/checkout/clover/${encodeURIComponent(id)}`;
 
+  const token = await getM2MToken();
+
   const response = await fetch(url, {
     method: "GET",
     cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${await getM2MToken()}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

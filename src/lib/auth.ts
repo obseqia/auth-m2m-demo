@@ -42,22 +42,28 @@ const client = createClerkClient({
 });
 
 async function fetchNewM2MToken(): Promise<CachedToken | null> {
-  console.time("getClerkMachineToken");
-  const secretKey = process.env.CLERK_MACHINE_SECRET_KEY;
+  try {
+    console.time("getClerkMachineToken");
+    const secretKey = process.env.CLERK_MACHINE_SECRET_KEY;
 
-  if (!secretKey) {
-    throw new Error("Missing CLERK_MACHINE_SECRET_KEY environment variable");
-  }
-
-  const { token, expiration } = await client.m2m.createToken({
-    secondsUntilExpiration: 10,
-    tokenFormat: "jwt",
-    claims: {
-      permissions: ["read:users", "read:orders"],
+    if (!secretKey) {
+      throw new Error("Missing CLERK_MACHINE_SECRET_KEY environment variable");
     }
-  });
-  console.debug("Generated Clerk new M2M token:", { token, expiration });
 
-  console.timeEnd("getClerkMachineToken");
-  return token ? { accessToken: token, expiresAt: expiration ?? 0 } : null;
+    const { token, expiration } = await client.m2m.createToken({
+      secondsUntilExpiration: 10,
+      tokenFormat: "jwt",
+      claims: {
+        permissions: ["read:users", "read:orders"],
+      },
+    });
+    console.debug("Generated Clerk new M2M token:", { token, expiration });
+
+    return token ? { accessToken: token, expiresAt: expiration ?? 0 } : null;
+  } catch (error) {
+    console.error("Error fetching new M2M token:", error);
+    return null;
+  } finally {
+    console.timeEnd("getClerkMachineToken");
+  }
 }
